@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 class ProfileHeader extends StatelessWidget {
   final AuthProvider authProvider;
-  const ProfileHeader({required this.authProvider});
+  const ProfileHeader({super.key, required this.authProvider});
   
 
   @override
@@ -52,8 +52,8 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-Widget _profileStat(String count, String label) {
-  return Column(
+  Widget _profileStat(String count, String label) {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(

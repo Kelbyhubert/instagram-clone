@@ -6,7 +6,7 @@ import 'package:intagram_clone/services/user_service.dart';
 
 class PostProvider extends ChangeNotifier {
   List<Post> _posts = [];
-    List<Post> _userPosts = [];
+  List<Post> _userPosts = [];
   late PostService _postService;
   late UserService _userService;
 
@@ -16,17 +16,23 @@ class PostProvider extends ChangeNotifier {
 
   List<Post> get userPosts => _userPosts;
 
-  
-
-  PostProvider({required this.authProvider}){
-  }
+  PostProvider({required this.authProvider}){}
 
   Future<void> fetchPosts({int offset = 0, int limit = 10}) async {
     if(authProvider.token == null) return;
 
     try{
-      _postService = PostService(authProvider.token);
-      List<Post> tempPost = await _postService.getPosts(offset, limit);
+     
+      List<Post> tempPost;
+
+      print(authProvider.user!.roleId);
+      if(authProvider.user!.roleId == 2){
+         _postService = PostService(authProvider.token);
+        tempPost = await _postService.getPosts(offset, limit);
+      }else{
+        _userService = UserService(authProvider.token);
+        tempPost = await _userService.getUserPosts(authProvider.user!.userId);
+      }
       _posts.addAll(tempPost);
       notifyListeners();
     }catch(e){
@@ -35,7 +41,7 @@ class PostProvider extends ChangeNotifier {
 
   }
 
-    Future<void> fetchUserPost() async {
+  Future<void> fetchUserPost() async {
     if(authProvider.token == null) return;
 
     try{
@@ -54,7 +60,11 @@ class PostProvider extends ChangeNotifier {
 
     try{
       _postService = PostService(authProvider.token);
-      _posts = await _postService.getPosts(0, 10);
+      if(authProvider.user!.roleId == 2){
+        _posts = await _postService.getPosts(0, 10);
+      }else{
+        _posts = await _userService.getUserPosts(authProvider.user!.userId);
+      }
       notifyListeners();
     }catch(e){
       print(e.toString());
